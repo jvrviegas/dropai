@@ -20,3 +20,8 @@ model Prompt {
   title    String
   template String
 }
+
+model GptModel {
+  id   String @id @default(uuid())
+  name String
+}

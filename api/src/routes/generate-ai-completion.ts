@@ -9,13 +9,14 @@ export async function generateAiCompletionRoute(app: FastifyInstance) {
       
     const bodySchema = z.object({
       prompt: z.string(),
+      gptModel: z.string(),
       temperature: z.number().min(0).max(1).default(0.5),
     })
 
-    const { prompt, temperature } = bodySchema.parse(req.body)
+    const { prompt, temperature, gptModel } = bodySchema.parse(req.body)
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo-16k',
+      model: gptModel,
       temperature,
       messages: [
         { role: 'user', content: prompt }

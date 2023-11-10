@@ -1,8 +1,17 @@
 import { PrismaClient } from '@prisma/client'
+import { openai } from '../src/lib/openai'
 const prisma = new PrismaClient()
 
 async function main() {
   await prisma.prompt.deleteMany()
+  await prisma.gptModel.deleteMany()
+
+  const modelsPage = await openai.models.list();
+  const models = modelsPage.data;
+
+  const createModelsPromises = models.map(async model => await prisma.gptModel.create({data: {name: model.id}}))
+
+  await Promise.allSettled(createModelsPromises)
 
   await prisma.prompt.create({
     data: {
@@ -59,7 +68,7 @@ Retorne os três títulos e a descrição em formato de lista como no exemplo ab
 
   await prisma.prompt.create({
     data: {
-      title: 'Descrição YouTube',
+      title: 'Script para criativo',
       template: `Seu papel é gerar uma descrição sucinta para um vídeo do YouTube.
   
 Abaixo você receberá uma transcrição desse vídeo, use essa transcrição para gerar a descrição.

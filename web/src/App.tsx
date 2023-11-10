@@ -3,18 +3,17 @@ import { Button } from "./components/ui/button";
 import { Separator } from "./components/ui/separator";
 import { Textarea } from "./components/ui/textarea";
 import { Label } from "./components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select";
 import { Slider } from "./components/ui/slider";
-import { VideoInputForm } from "./components/video-input-form";
 import { PromptSelect } from "./components/prompt-select";
 import { useState } from "react";
 import { useCompletion } from 'ai/react'
+import { GptModelSelect } from './components/gpt-model-select';
 
 export function App() {
   const [temperature, setTemperature] = useState(0.5)
-  const [videoId, setVideoId] = useState<string | null>(null)
+  const [selectedGptModel, setSelectedGptModel] = useState<string | null>(null)
 
-  console.log({videoId, temperature})
+  console.log({selectedGptModel})
 
   const {
     input,
@@ -27,20 +26,25 @@ export function App() {
     api: 'http://localhost:3333/ai/complete',
     body: {
       temperature,
+      gptModel: selectedGptModel,
     },
     headers: {
       'Content-Type': 'application/json',
     }
   })
 
+  function handleSelectGptModel(name: string) {
+    setSelectedGptModel(name)
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="px-6 py-3 flex items-center justify-between border-b">
-        <h1 className="text-xl font-bold">upload.ai</h1>
+        <h1 className="text-xl font-bold">drop.ai</h1>
 
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground">
-            Desenvolvido com 💜 no NLW da Rocketseat
+            Desenvolvido por 🤖
           </span>
 
           <Separator orientation="vertical" className="h-6" />
@@ -75,10 +79,6 @@ export function App() {
         </div>
 
         <aside className="w-80 space-y-6">
-          <VideoInputForm onVideoUploaded={setVideoId} />
-
-          <Separator />
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label>Prompt</Label>
@@ -87,17 +87,7 @@ export function App() {
 
             <div className="space-y-2">
               <Label>Modelo</Label>
-              <Select disabled defaultValue="gpt3.5">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="gpt3.5">GPT 3.5-turbo 16k</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="block text-sm text-muted-foreground italic">
-                Você poderá customizar essa opção em breve
-              </span>
+              <GptModelSelect onGptModelSelected={handleSelectGptModel}  />
             </div>
 
             <Separator />
